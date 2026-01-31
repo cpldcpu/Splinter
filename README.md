@@ -12,4 +12,5 @@ Experiments towards a programmer for the "$0.03 MCUs" based on a WCH CH32V003.
 
 `Firmware/src_boostertest/` - test firmware for the boost converter and voltage regulation.
 
+`Firmware/src_pgmtest/` - Padauk (PDK) programmer test firmware (ID read / dump / erase / write experiments).
 
