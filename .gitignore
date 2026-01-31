@@ -1,0 +1,19 @@
+# Build artifacts
+*.elf
+*.hex
+*.lst
+*.bin
+*.map
+*.o
+*.d
+
+# IDE
+.vscode
+.idea
+.cache
+compile_commands.json
+
+# OS
+.DS_Store
+
+.claude/
