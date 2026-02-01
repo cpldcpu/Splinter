@@ -34,7 +34,7 @@ Booster frequency was set so Vboost ~15V, 1 kohm load. Scope settings: 1 us/div 
 
 ### PDK programming (Firmware/src_pgmtest)
 
-Bring-up notes (duplicated from the firmware README):
+Notes:
 - Target pin mapping: PC5=ICPCK, PC6=MOSI (3-wire only), PC7=ICPDA/MISO (2-wire data or 3-wire MISO).
 - Power sequencing: VDD/VPP are derived from BOOST; keep VDD/VPP at 0V while enabling BOOST, then cycle VDD/VPP per programming step.
 - IO level note: without level shifting, we keep target VDD close to ~5V during bring-up for reliable GPIO logic levels.
