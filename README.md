@@ -5,8 +5,12 @@ Experiments towards a programmer for the "adauk 8-Bit MCUs based on a WCH CH32V0
 Hardware conceptualization, architecture and design was done manually using LTSpice and EasyEDA, based on [Easy-PDK-Programmer lite](https://github.com/free-pdk/easy-pdk-programmer-lite-hardware)
 
 Bringup and documentation with agentic GenAI (Claude Code and Codex), using [earlier experiements](https://github.com/cpldcpu/SimPad) and the [free-pkd Firmware ](https://github.com/free-pdk/easy-pdk-programmer-software) as references. The Firmware is based on [ch32fun](https://github.com/cnlohr/ch32fun)
+### Schematics
+![Schematics](Design/screenshots/schematics.png)
 
-![Splinter hardware](image.png)
+### Partially popoulated PCB of test build
+![Splinter hardware](Design/screenshots/pcb_photo.png)
+
 
 ## Repo Layout
 
