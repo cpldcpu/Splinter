@@ -17,27 +17,18 @@ For implementation details, see `Firmware/src_boostertest/README.md` and `Firmwa
 
 #### Booster ripple
 
-`screenshots/booster_ripple.png`
-
-Scope settings: 1 us/div (horizontal) and 50 mV/div (vertical). Measured ripple: 64 mV Vpp.
+Booster frequency was set so Vboost ~15V, 1 kohm load. Scope settings: 1 us/div (horizontal) and 50 mV/div (vertical). Measured ripple: 64 mV Vpp. The ripple remained similar across load conditions.
 
 ![Booster ripple](screenshots/booster_ripple.png)
 
 #### Booster voltage vs duty cycle and load
 
-`screenshots/BoosterV_vs_DC_and_Load.png`
-
 ![Booster V vs duty and load](screenshots/BoosterV_vs_DC_and_Load.png)
 
 #### Booster current vs duty cycle and load
-
-`screenshots/BoosterI_vs_dutyc_and_Load.png`
-
 ![Booster I vs duty and load](screenshots/BoosterI_vs_dutyc_and_Load.png)
 
 #### VPP vs PWM_VPP and VBOOST
-
-`screenshots/Vpp_vs_PWM_VPP_and_Vboost.png`
 
 ![VPP vs PWM_VPP and VBOOST](screenshots/Vpp_vs_PWM_VPP_and_Vboost.png)
 
@@ -50,19 +41,14 @@ Bring-up notes (duplicated from the firmware README):
 
 #### PFS154 read
 
-`screenshots/read_pfs154.png`
-
 ![PFS154 read](screenshots/read_pfs154.png)
 
 #### PMS150C read
 
-`screenshots/read_pms150c.png`
 
 ![PMS150C read](screenshots/read_pms150c.png)
 
 #### PFS154 erase + write + read
-
-`screenshots/erase_write_read_pfs154.png`
 
 ![PFS154 erase/write/read](screenshots/erase_write_read_pfs154.png)
 
