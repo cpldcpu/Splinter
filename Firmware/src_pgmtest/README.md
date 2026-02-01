@@ -4,6 +4,8 @@ This firmware is a test harness for programming an attached Padauk microcontroll
 
 It reuses the same power-control blocks (PWM + ADC measurement + VREF calibration) used by `src_boostertest/` so VDD/VPP/Boost voltages can be controlled and monitored.
 
+Bring-up captures (terminal/scope screenshots) collected with this firmware live in `Design/README.md`.
+
 Power model used in this test firmware:
 - BOOST: regulated to a target when enabled (closed-loop using ADC)
 - VDD/VPP: set directly from PWM using linear-amplifier calibration constants (open-loop)
