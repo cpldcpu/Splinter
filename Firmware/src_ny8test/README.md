@@ -96,6 +96,7 @@ Nyquest's C compiler package NYC_NY8 (2.30) contains an LLVM toolchain with an N
 - `example/build.sh` - compile + link, then `tools/ny8_elf2h.py` writes `ny8_image.h`
   (address/word pairs; gaps stay unprogrammed). On Linux run with `RUN=wine NYC_LLVM=...`.
 - `NY8_ISA.md` - instruction encoding table
+- `NY8A_DEVICES.md` - NY8A family: IDs, memory, programming parameters (`tools/ny8_devlist.py`)
 
 `ny8_image.h` in this directory is the blink example. Programming applies `NY8_IMAGE_XOR`
 (default 0x3F00, see NY8_ISA.md); the first programmed chip shows whether it is right.
