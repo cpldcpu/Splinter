@@ -69,9 +69,15 @@ i = 8-bit immediate, f = 4-bit F/S-page address, a = program address.
 | 3800 | `11 10aa aaaa aaaa` | LGOTO a (10 bit) |
 
 Notes:
-- The assembler truncates numeric GOTO/CALL operands to 8 bits, and the linker relocation
+- The LLVM assembler truncates numeric GOTO/CALL operands to 8 bits, and the linker relocation
   for GOTO/CALL to labels inserted a byte address in a test. The compiler emits LGOTO/LCALL,
-  which link correctly. The 9-bit GOTO field is inferred from the opcode map (0x3200..0x33FF).
+  which link correctly. The 9-bit GOTO field is inferred from the opcode map (0x3200..0x33FF)
+  and the NY8A050E1 datasheet ("For GOTO instruction, PC[8:0] is from instruction word").
+- `asm/tools/ny8isa.py` contains this table in machine-readable form; `asm/tools/llvm_xcheck.py`
+  compares it with the LLVM assembler (6,709 instruction forms, no differences).
+- Words not in the table (e.g. 0x0040..0x007F, 0x2C00..0x2FFF, 0x3C00..0x3FFF) are not
+  produced by the toolchain for `ny8a051j`; the 2K-word parts probably use 0x2C00/0x3C00 for
+  11-bit LCALL/LGOTO.
 - **OTP word format (unconfirmed):** Q-Writer identifies MOVIA as `0x1E00 | i` and RETIA as
   `0x1F00 | i` in the OTP buffer it sends to the writer. Relative to this table, bits 13..8
   are inverted (XOR 0x3F00) and the immediate byte is unchanged. `src_ny8test` applies
