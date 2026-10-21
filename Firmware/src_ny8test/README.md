@@ -45,6 +45,25 @@ Required SOT23-6 → SOP8 mapping: 1→7, 2→8, 3→6, 4→5, 5→1, 6→4.
 - Config words: IHRC trim 0x0D[6:0], ILRC trim 0x0E[2:0], read protect 0x0F[0],
   factory data in 0x05 (do not touch)
 
+## Creating programs
+
+Nyquest's C compiler package NYC_NY8 (2.30) contains an LLVM toolchain with an NY8 target
+(`llvm/bin`: clang, ld.lld, llvm-objdump). Its CPU model `ny8a051j` matches the NY8A050E1
+(512-word ROM, same register map for the blocks the chip has).
+
+- `example/blink.c` - toggles PB2
+- `example/ny8a050e1.ld` - linker script: code from word 0x010 (keeps the factory rolling
+  code at 0x00E/0x00F intact), 0x1FE/0x1FF left free, RAM 0x10..0x2F
+- `example/build.sh` - compile + link, then `tools/ny8_elf2h.py` writes `ny8_image.h`
+  (address/word pairs; gaps stay unprogrammed). On Linux run with `RUN=wine NYC_LLVM=...`.
+- `NY8_ISA.md` - instruction encoding table
+
+`ny8_image.h` in this directory is the blink example. Programming applies `NY8_IMAGE_XOR`
+(default 0x3F00, see NY8_ISA.md); the first programmed chip shows whether it is right.
+
+The configuration words (behind the 512-word ROM) are not written yet, so the chip runs
+with blank options and an untrimmed oscillator.
+
 ## Bring-up
 
 1. `NY8TEST_PROGRAM 0` (default): tries the entry variants and dumps ROM 0x000–0x21F.
@@ -52,6 +71,8 @@ Required SOT23-6 → SOP8 mapping: 1→7, 2→8, 3→6, 4→5, 5→1, 6→4.
    0x3FFF elsewhere on a new part. Raw frames are printed in brackets next to the decoded words.
 2. `NY8TEST_PROGRAM 1`: programs 0x3FFE into word 0x1F0 with a VPP sweep from 6.0 V and
    reads back after each step. Stop at the first success.
+3. `NY8TEST_WRITE_IMAGE 1`: blank-checks, programs and verifies `ny8_image.h` at
+   `NY8TEST_VPP_PROG_MV` (set from step 2).
 
 Known limitations:
 - VPP resolution of `power.c` is ~0.53 V per PWM step (1 MHz PWM, period 48). A finer

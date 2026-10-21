@@ -4,6 +4,7 @@
 //   try the entry variants and read the start of ROM (incl. the factory rolling
 //   code at 0x00E/0x00F) and the area behind the 512-word ROM.
 // Step 2 (NY8TEST_PROGRAM=1): program one word with a VPP sweep and read it back.
+// Step 3 (NY8TEST_WRITE_IMAGE=1): program ny8_image.h (generated from example/) and verify.
 
 #include "ch32fun.h"
 #include <stdio.h>
@@ -12,6 +13,9 @@
 #include "power.h"
 
 #define NY8TEST_PROGRAM        0        // 1 = run the single-word VPP sweep (consumes one ROM word)
+#define NY8TEST_WRITE_IMAGE    0        // 1 = program ny8_image.h (see example/) and verify
+#define NY8TEST_VPP_PROG_MV    7000     // VPP for image programming: set from the sweep result
+#define NY8_IMAGE_XOR          0x3F00   // toolchain word -> OTP word (see NY8_ISA.md)
 #define NY8TEST_PROG_ADDR      0x1F0    // unused word near the end of the 512-word ROM
 #define NY8TEST_PROG_VALUE     0x3FFE   // clears only bit 0
 #define NY8TEST_VPP_START_MV   6000
@@ -20,6 +24,10 @@
 #define NY8TEST_PULSE_US       90       // writer: 90 us SCK-high on the last data bit
 
 #define VDD_MV 5000
+
+#if NY8TEST_WRITE_IMAGE
+#include "ny8_image.h"
+#endif
 
 static void print_words(const char *tag, uint16_t base, const uint16_t *raw, uint16_t n)
 {
@@ -138,6 +146,43 @@ int main(void)
 			printf("-> programmed at VPP %lumV\n", (unsigned long)vpp);
 			break;
 		}
+	}
+#endif
+
+#if NY8TEST_WRITE_IMAGE
+	// ---- step 3: program the image from ny8_image.h ----
+	{
+		printf("\n== image: %u words, VPP %lumV, XOR %04X\n", NY8_IMAGE_LEN,
+			(unsigned long)NY8TEST_VPP_PROG_MV, NY8_IMAGE_XOR);
+		uint16_t cur, raw, bad = 0;
+		ny8_enter(&cfg, NY8_ENTRY_PLAIN, 0);
+		// blank check: every target word must be 0x3FFF or already hold its value
+		for (uint16_t k = 0; k < NY8_IMAGE_LEN; k++)
+		{
+			uint16_t a = ny8_image[k][0], v = ny8_image[k][1] ^ NY8_IMAGE_XOR;
+			ny8_read_words(&cfg, NY8_CMD_READ, a, 1, &cur, &raw);
+			if (cur != 0x3FFF && cur != v) { printf("not blank: %03X = %04X\n", a, cur); bad++; }
+		}
+		if (bad)
+		{
+			printf("-> abort, %u words not blank\n", bad);
+		}
+		else
+		{
+			for (uint16_t k = 0; k < NY8_IMAGE_LEN; k++)
+			{
+				uint16_t a = ny8_image[k][0], v = ny8_image[k][1] ^ NY8_IMAGE_XOR;
+				if (v != 0x3FFF) ny8_program_word(&cfg, a, v, NY8TEST_VPP_PROG_MV, NY8TEST_PULSE_US);
+			}
+			for (uint16_t k = 0; k < NY8_IMAGE_LEN; k++)
+			{
+				uint16_t a = ny8_image[k][0], v = ny8_image[k][1] ^ NY8_IMAGE_XOR;
+				ny8_read_words(&cfg, NY8_CMD_READ, a, 1, &cur, &raw);
+				if (cur != v) { printf("verify %03X: want %04X got %04X\n", a, v, cur); bad++; }
+			}
+			printf("-> %s (%u errors)\n", bad ? "VERIFY FAIL" : "OK", bad);
+		}
+		ny8_leave();
 	}
 #endif
 
