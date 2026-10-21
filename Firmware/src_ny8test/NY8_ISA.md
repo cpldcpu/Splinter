@@ -2,7 +2,10 @@
 
 Obtained by assembling every instruction with the NY8 target of Nyquest's LLVM toolchain
 (NYC_NY8 2.30, `clang --target=ny8 -mcpu=ny8a051j`) and reading back the object code.
-`ny8a051j` covers the 512-word first-generation parts (NY8A050E1 etc.).
+The table applies to the first-generation 14-bit NY8 parts: NY8A050D/E/E1 (all packages,
+including NY8A050E1S6) and NY8A051B..L/H1. NYC_NY8's SDCC device table and linker configs list
+these with the same core and differing only in ROM/RAM size. The "16-bit ROM" series
+(e.g. NY8BM84A, NY8F2481) uses a different encoding (separate decoder table in the LLVM target).
 
 R = 6-bit register address (bit 6 is 0), d = destination (0: ACC, 1: R), b = bit number,
 i = 8-bit immediate, f = 4-bit F/S-page address, a = program address.

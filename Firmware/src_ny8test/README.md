@@ -20,8 +20,46 @@ Q-Writer 6.60 (8051 code, `ny8_otp_writer_b_firmware`). Nothing here has been ve
 | 8 | GND (1 Ω shunt) | – | VSS |
 
 The NY8A050E1 SOP8 pinout matches the Padauk SOP8 socket on VDD/VPP/GND.
-**SOT23-6 (NY8A050E1S6) needs its own adapter.** A Padauk SOT23-6 adapter puts VPP on PB2/SCK.
-Required SOT23-6 → SOP8 mapping: 1→7, 2→8, 3→6, 4→5, 5→1, 6→4.
+
+## Connecting the NY8A050E1S6 (SOT23-6)
+
+The SOT23-6 package uses a different pin order than the SOP8 socket, so it needs an
+adapter or six wires. Programming uses only PB0..PB3, VDD and VSS.
+
+```
+   NY8A050E1S6, top view                 Splinter R0 socket (SOP8 position)
+   (dot = pin 1)                          and header pins
+          +-------+
+   SDI  1 |o      | 6  VPP               socket 1 = H1.5  DEV_VDD
+   PB0    |       |    PB3               socket 4 = H1.8  DEV_ICVPP
+   VSS  2 |       | 5  VDD               socket 5 = H2.8  ICPCK (PC5)
+          |       |                      socket 6 = H2.7  MOSI  (PC6)
+   SDO  3 |       | 4  SCK               socket 7 = H2.6  PA0   (PD6)
+   PB1    +-------+    PB2               socket 8 = H2.5  GND (1 ohm shunt)
+```
+
+| SOT23-6 pin | Function | Splinter socket pin | Header pin | Net |
+|---|---|---|---|---|
+| 1 | PB0 / SDI | 7 | H2.6 (or H3.6) | PA0 (PD6), programmer drives |
+| 2 | VSS | 8 | H2.5 (or H3.5) | GND via 1 Ω shunt |
+| 3 | PB1 / SDO | 6 | H2.7 (or H3.7) | MOSI (PC6), programmer reads |
+| 4 | PB2 / SCK | 5 | H2.8 (or H3.8) | ICPCK (PC5) |
+| 5 | VDD | 1 | H1.5 | DEV_VDD |
+| 6 | PB3 / VPP | 4 | H1.8 | DEV_ICVPP |
+| – | – | 2, 3 | H1.6, H1.7 | leave open |
+
+Options:
+- A SOT23-6 breakout board (SOT23-6 to 2.54 mm pins) with six jumper wires to the headers
+  listed above. Keep the wires short (< 10 cm); the writer manual allows at most 680 pF on
+  SDI/SDO/SCK.
+- An adapter from SOT23-6 to the SOP8 socket wired 1→7, 2→8, 3→6, 4→5, 5→1, 6→4. This is the
+  same mapping as Microchip's PIC10F (SOT23-6) to PIC12F (8-pin) adapters.
+
+**Do not use a Padauk SOT23-6 adapter.** It routes socket pin 4 (VPP) to SOT23-6 pin 4,
+which is PB2/SCK on the NY8A050E1, and SCK would see the programming voltage.
+
+Check before powering: VDD (pin 5) and VSS (pin 2) must not be swapped, and VPP must reach
+pin 6 only. Run the read-only step first; it never raises VPP above VDD.
 
 ## Protocol summary
 
@@ -42,7 +80,8 @@ Required SOT23-6 → SOP8 mapping: 1→7, 2→8, 3→6, 4→5, 5→1, 6→4.
 - NY8A050E1: 512 words ROM, 32 B RAM, 16 config words, chipid1 0x001F, chipid0 0x0000 (rev A) / 0x0001 (rev B/C)
 - `WRITER_Enter_Mode` 0, `Program_High_Voltage_setting` 0x46 (probably 7.0 V)
 - 0x00E/0x00F: factory rolling code (non-blank on a new part); 0x1FE/0x1FF reserved
-- Config words: IHRC trim 0x0D[6:0], ILRC trim 0x0E[2:0], read protect 0x0F[0],
+- Config words: 16 words directly behind the ROM, word addresses 0x200..0x20F (NYC_NY8 linker
+  config). Within the block: IHRC trim 0x0D[6:0], ILRC trim 0x0E[2:0], read protect 0x0F[0],
   factory data in 0x05 (do not touch)
 
 ## Creating programs
